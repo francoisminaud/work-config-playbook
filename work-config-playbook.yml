@@ -1,0 +1,51 @@
+- hosts: localhost
+  tasks:
+    - name: Now update my bashrc file (git branch display and docker cleanup)
+      blockinfile:
+        dest: "{{ lookup('env','HOME') }}/.bashrc"
+        block: |
+          parse_git_branch() {
+            git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+          }
+          export PS1="\u@\h \[\e[32m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$"
+          #Used to cleanup dangling images and volumes
+          function cleanup_docker() {
+            docker ps -f status=exited -q | xargs -r docker rm
+            docker images -f dangling=true -q | xargs -r docker rmi
+            docker volume ls -qf dangling=true | xargs -r docker volume rm
+          }
+        backup: yes
+  #Update my ubuntu apt packages
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
+    - name: Install git/gitk/vim/gnome-shell-extensions/ncdu packages
+      become: true
+      package:
+        name:
+          - git
+          - gitk
+          - vim
+          - gnome-shell-extensions
+          - ncdu
+        state: present
+    # PyCharm installation for Python projects
+    - name: Install latest Pycharm version
+      become: true
+      snap:
+        name: pycharm-community
+        classic: yes
+    # Tweak VIM so I can edit yaml files easily
+    - name: Install vimrc file
+      copy:
+        src: my_vimrc
+        dest: ~/.vimrc
+    - name: Install indentLine that will help work with yaml  files in VI (part1)
+      git:
+        repo: 'https://github.com/Yggdroot/indentLine.git'
+        dest: ~/.vim/pack/vendor/start/indentLine
+    - name: Install indentline (part2)
+      shell: vim -u NONE -c "helptags  ~/.vim/pack/vendor/start/indentLine/doc" -c "q"
