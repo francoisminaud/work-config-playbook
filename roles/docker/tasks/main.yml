@@ -19,10 +19,10 @@
   - name: Update apt and install docker-ce
     apt: update_cache=yes name=docker-ce state=latest
 
-  - name: Now update my bashrc file (git branch display and docker cleanup)
-    become: false
+  - name: Now update Bashrc file (docker cleanup function to free memory space)
     blockinfile:
       dest: "{{ lookup('env','HOME') }}/.bashrc"
+      marker: "# {mark} Docker modifications"
       block: |
          #Used to cleanup dangling images and volumes
          function cleanup_docker() {

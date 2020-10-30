@@ -8,7 +8,9 @@
   tasks:
     - name: Now update my bashrc file (git branch display and docker cleanup)
       blockinfile:
+        #become: false
         dest: "{{ lookup('env','HOME') }}/.bashrc"
+        marker: "# {mark} Git branch display Bashrc  modifications"
         block: |
           parse_git_branch() {
             git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
@@ -31,21 +33,7 @@
           - vim
           - gnome-shell-extensions
           - ncdu
+          - yamllint
+          - ansible-lint
         state: present
-    # PyCharm installation for Python projects
-    - name: Install latest Pycharm version
-      become: true
-      snap:
-        name: pycharm-community
-        classic: yes
-    # Tweak VIM so I can edit yaml files easily
-    - name: Install vimrc file
-      copy:
-        src: my_vimrc
-        dest: ~/.vimrc
-    - name: Install indentLine that will help work with yaml  files in VI (part1)
-      git:
-        repo: 'https://github.com/Yggdroot/indentLine.git'
-        dest: ~/.vim/pack/vendor/start/indentLine
-    - name: Install indentline (part2)
-      shell: vim -u NONE -c "helptags  ~/.vim/pack/vendor/start/indentLine/doc" -c "q"
+...
