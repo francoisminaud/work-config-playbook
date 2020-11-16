@@ -5,6 +5,11 @@
     snap:
      name: pycharm-community
      classic: yes
+  - name: Install git/gitk/vim/gnome-shell-extensions/ncdu packages
+    become: true
+    package:
+      name:
+        - git
    # Tweak VIM so I can edit yaml files easily
   - name: Install vimrc file
     copy:

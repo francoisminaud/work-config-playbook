@@ -1,5 +1,12 @@
 ---
 - hosts: localhost
+  pre_tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
   roles:
     - role: docker
       become: yes
@@ -17,13 +24,6 @@
           }
           export PS1="\u@\h \[\e[32m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$"
         backup: yes
-  #Update my ubuntu apt packages
-    - name: Update and upgrade apt packages
-      become: true
-      apt:
-        upgrade: yes
-        update_cache: yes
-        cache_valid_time: 86400 #One day
     - name: Install git/gitk/vim/gnome-shell-extensions/ncdu packages
       become: true
       package:
