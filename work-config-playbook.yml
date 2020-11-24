@@ -35,5 +35,6 @@
           - ncdu
           - yamllint
           - ansible-lint
+          - terminator
         state: present
 ...
